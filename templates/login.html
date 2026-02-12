@@ -1,0 +1,80 @@
+{{template "layout.html" .}}
+{{define "content"}}
+<style>
+    .login-container {
+        max-width: 360px;
+        margin: 80px auto 0;
+    }
+    .login-container h2 {
+        font-size: 22px;
+        margin-bottom: 8px;
+    }
+    .login-container p.subtitle {
+        color: #888;
+        font-size: 14px;
+        margin-bottom: 28px;
+    }
+    .form-group {
+        margin-bottom: 16px;
+    }
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        color: #aaa;
+        margin-bottom: 6px;
+        font-weight: 500;
+    }
+    .form-group input {
+        width: 100%;
+        padding: 10px 12px;
+        background: #111;
+        border: 1px solid #333;
+        border-radius: 6px;
+        color: #e0e0e0;
+        font-size: 14px;
+    }
+    .form-group input:focus {
+        outline: none;
+        border-color: #6366f1;
+    }
+    .btn-login {
+        width: 100%;
+        padding: 12px;
+        background: #6366f1;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 8px;
+    }
+    .btn-login:hover { background: #4f46e5; }
+    .error-msg {
+        color: #f87171;
+        background: #1a0000;
+        border: 1px solid #7f1d1d;
+        padding: 10px 14px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+</style>
+
+<div class="login-container">
+    <h2>Admin Login</h2>
+    <p class="subtitle">Ask your system administrator for access credentials.</p>
+
+    {{if .Error}}
+    <div class="error-msg">{{.Error}}</div>
+    {{end}}
+
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <label for="token">Admin Token</label>
+            <input type="password" id="token" name="token" placeholder="Enter admin token" required autofocus>
+        </div>
+        <button type="submit" class="btn-login">Sign In</button>
+    </form>
+</div>
+{{end}}

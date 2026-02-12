@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} — {{.Brand.Prefix}}{{.Brand.Suffix}}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        .header {
+            background: #111;
+            border-bottom: 1px solid #222;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .header h1 span { color: #6366f1; }
+        .header nav a {
+            color: #888;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+        .header nav a:hover { color: #fff; }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-pending { background: #854d0e; color: #fbbf24; }
+        .badge-approved { background: #065f46; color: #34d399; }
+        .badge-denied { background: #7f1d1d; color: #f87171; }
+        .badge-online { background: #065f46; color: #34d399; }
+        .badge-offline { background: #374151; color: #9ca3af; }
+        .badge-error { background: #7f1d1d; color: #f87171; }
+        .badge-running { background: #065f46; color: #34d399; }
+        .badge-installed { background: #854d0e; color: #fbbf24; }
+        .badge-draft { background: #374151; color: #9ca3af; }
+        .badge-staging { background: #854d0e; color: #fbbf24; }
+        .badge-live { background: #065f46; color: #34d399; }
+        .badge-paused { background: #78350f; color: #f59e0b; }
+        .badge-retired { background: #374151; color: #9ca3af; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid #1f1f1f;
+        }
+        th {
+            color: #888;
+            font-weight: 500;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td { font-size: 14px; }
+        tr:hover { background: #111; }
+        a { color: #818cf8; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .btn {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .btn-primary { background: #6366f1; color: #fff; }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-approve { background: #065f46; color: #34d399; }
+        .btn-approve:hover { background: #047857; }
+        .btn-deny { background: #7f1d1d; color: #f87171; }
+        .btn-deny:hover { background: #991b1b; }
+        .btn-back { background: #1f1f1f; color: #ccc; }
+        .btn-back:hover { background: #2a2a2a; }
+        .btn-warning { background: #78350f; color: #f59e0b; }
+        .btn-warning:hover { background: #92400e; }
+        .actions { display: flex; gap: 8px; }
+        .empty {
+            text-align: center;
+            color: #666;
+            padding: 60px 20px;
+            font-size: 15px;
+        }
+        .stat-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 16px 20px;
+            flex: 1;
+        }
+        .stat-label { color: #888; font-size: 12px; text-transform: uppercase; }
+        .stat-value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .detail-item {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            padding: 14px 18px;
+        }
+        .detail-label {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .detail-value {
+            font-size: 15px;
+            color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><span>{{.Brand.Prefix}}</span>{{.Brand.Suffix}}</h1>
+        <nav>
+            {{if .LoggedIn}}
+            {{range .Nav}}
+            <a href="{{.Path}}">{{.Label}}</a>
+            {{end}}
+            <form method="POST" action="/logout" style="display:inline;margin-left:20px;">
+                <button type="submit" style="background:none;border:none;color:#888;font-size:14px;cursor:pointer;">Logout</button>
+            </form>
+            {{end}}
+        </nav>
+    </div>
+    <div class="container">
+        {{block "content" .}}{{end}}
+    </div>
+</body>
+</html>
