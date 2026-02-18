@@ -1,0 +1,4 @@
+github.com/cederikdotcom/hydraapi v0.1.0 h1:nmGKdBKGyYVg9joRdn0qKfwe9iBFVc6lUwnKSuLvK10=
+github.com/cederikdotcom/hydraapi v0.1.0/go.mod h1:pfCseUomMcCSRMEUimHi9zo/wShOX9jeC7hohxXWsLo=
+github.com/cederikdotcom/hydraauth v1.0.0 h1:cq/o7y3tbg6hNUubVUPLWSdqOFrdCSkuE+JXdhKY/rk=
+github.com/cederikdotcom/hydraauth v1.0.0/go.mod h1:LTBaxV3hLc0FBGG9Ek56ZpynJjiZH5HuRDulCArH+7U=

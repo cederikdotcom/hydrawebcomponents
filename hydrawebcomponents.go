@@ -2,16 +2,18 @@ package hydrawebcomponents
 
 import (
 	"net/http"
-	"strings"
+
+	"github.com/cederikdotcom/hydraauth"
 )
 
 // Config configures a Web instance.
 type Config struct {
-	ProjectName string    // Full name, e.g. "HydraExperienceLibrary"
-	BrandPrefix string    // Colored part, e.g. "Hydra"
-	BrandSuffix string    // White part, e.g. "ExperienceLibrary"
-	AdminToken  string    // Shared admin token for auth
-	NavLinks    []NavLink // Navigation links shown when logged in
+	ProjectName string           // Full name, e.g. "HydraExperienceLibrary"
+	BrandPrefix string           // Colored part, e.g. "Hydra"
+	BrandSuffix string           // White part, e.g. "ExperienceLibrary"
+	Auth        *hydraauth.Auth  // Auth instance for token validation and cookies
+	AdminToken  string           // Deprecated: use Auth instead. Kept for backward compat.
+	NavLinks    []NavLink        // Navigation links shown when logged in
 }
 
 // NavLink is a navigation entry shown in the header.
@@ -38,16 +40,26 @@ type PageData struct {
 
 // Web holds shared web infrastructure state.
 type Web struct {
-	adminToken string
-	brand      Brand
-	navLinks   []NavLink
-	renderer   *Renderer
+	auth     *hydraauth.Auth
+	brand    Brand
+	navLinks []NavLink
+	renderer *Renderer
 }
 
 // New creates a new Web instance with the given configuration.
 func New(cfg Config) *Web {
+	auth := cfg.Auth
+	if auth == nil && cfg.AdminToken != "" {
+		auth = hydraauth.New(cfg.AdminToken, hydraauth.WithCookie(hydraauth.CookieConfig{
+			Name:     "admin_session",
+			Path:     "/",
+			Secure:   true,
+			MaxAge:   86400 * 30,
+			SameSite: http.SameSiteLaxMode,
+		}))
+	}
 	return &Web{
-		adminToken: cfg.AdminToken,
+		auth: auth,
 		brand: Brand{
 			Prefix: cfg.BrandPrefix,
 			Suffix: cfg.BrandSuffix,
@@ -59,18 +71,7 @@ func New(cfg Config) *Web {
 // IsAuthenticated checks if the request has a valid admin token
 // via Bearer header or session cookie.
 func (w *Web) IsAuthenticated(r *http.Request) bool {
-	if auth := r.Header.Get("Authorization"); auth != "" {
-		token := strings.TrimPrefix(auth, "Bearer ")
-		if token == w.adminToken {
-			return true
-		}
-	}
-	if cookie, err := r.Cookie("admin_session"); err == nil {
-		if cookie.Value == w.adminToken {
-			return true
-		}
-	}
-	return false
+	return w.auth.IsAuthenticated(r)
 }
 
 // HandleLoginPage renders the shared login page.
@@ -85,33 +86,18 @@ func (w *Web) HandleLoginPage(wr http.ResponseWriter, r *http.Request) {
 // HandleLogin processes the login form submission.
 func (w *Web) HandleLogin(wr http.ResponseWriter, r *http.Request) {
 	token := r.FormValue("token")
-	if token != w.adminToken {
+	if !w.auth.ValidateToken(token) {
 		wr.WriteHeader(http.StatusUnauthorized)
 		w.renderer.Render(wr, "login.html", nil, false, "Invalid token")
 		return
 	}
-	http.SetCookie(wr, &http.Cookie{
-		Name:     "admin_session",
-		Value:    w.adminToken,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteLaxMode,
-		MaxAge:   86400 * 30,
-	})
+	w.auth.SetLoginCookie(wr)
 	http.Redirect(wr, r, "/admin", http.StatusSeeOther)
 }
 
 // HandleLogout clears the session cookie and redirects to login.
 func (w *Web) HandleLogout(wr http.ResponseWriter, r *http.Request) {
-	http.SetCookie(wr, &http.Cookie{
-		Name:     "admin_session",
-		Value:    "",
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-		MaxAge:   -1,
-	})
+	w.auth.ClearLoginCookie(wr)
 	http.Redirect(wr, r, "/login", http.StatusSeeOther)
 }
 
