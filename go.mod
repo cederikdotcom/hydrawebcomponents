@@ -6,3 +6,5 @@ require (
 	github.com/cederikdotcom/hydraapi v0.1.0
 	github.com/cederikdotcom/hydraauth v1.0.0
 )
+
+require github.com/yuin/goldmark v1.7.16
