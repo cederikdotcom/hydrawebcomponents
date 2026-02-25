@@ -1,0 +1,54 @@
+{{define "content"}}
+<style>
+    .landing {
+        max-width: 640px;
+        margin: 80px auto 0;
+    }
+    .landing h2 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 16px;
+        line-height: 1.3;
+    }
+    .landing h2 span { color: #6366f1; }
+    .landing p {
+        font-size: 16px;
+        line-height: 1.7;
+        color: #999;
+        margin-bottom: 32px;
+    }
+    .landing-links {
+        display: flex;
+        gap: 16px;
+    }
+    .landing-links a {
+        display: inline-block;
+        padding: 12px 24px;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .landing-links a:hover { text-decoration: none; }
+    .landing-links .primary {
+        background: #6366f1;
+        color: #fff;
+    }
+    .landing-links .primary:hover { background: #5558e6; }
+    .landing-links .secondary {
+        background: #1a1a2e;
+        color: #818cf8;
+        border: 1px solid #2a2a4e;
+    }
+    .landing-links .secondary:hover { background: #222244; }
+</style>
+<div class="landing">
+    <h2><span>{{.Brand.Prefix}}</span> {{.Brand.Suffix}}</h2>
+    {{if .Data}}<p>{{.Data}}</p>{{end}}
+    <div class="landing-links">
+        <a href="/docs" class="primary">Documentation</a>
+        <a href="/login" class="secondary">Admin Login</a>
+    </div>
+</div>
+{{end}}

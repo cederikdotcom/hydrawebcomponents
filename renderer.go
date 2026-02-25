@@ -14,6 +14,31 @@ type Renderer struct {
 	web       *Web
 }
 
+// PublicRenderer holds pre-parsed templates for public (unauthenticated) pages.
+type PublicRenderer struct {
+	templates map[string]*template.Template
+	web       *Web
+}
+
+// Render executes a public template with the given data wrapped in PageData.
+func (r *PublicRenderer) Render(w http.ResponseWriter, name string, data any) {
+	t, ok := r.templates[name]
+	if !ok {
+		http.Error(w, "template not found: "+name, http.StatusInternalServerError)
+		return
+	}
+
+	pd := PageData{
+		Title: r.web.brand.Prefix + r.web.brand.Suffix,
+		Brand: r.web.brand,
+		Data:  data,
+	}
+
+	if err := t.ExecuteTemplate(w, "public-layout.html", pd); err != nil {
+		log.Printf("hydrawebcomponents: public template error (%s): %v", name, err)
+	}
+}
+
 // NewRenderer creates a Renderer by combining the shared layout template
 // with project-specific page templates from projectFS.
 //
@@ -59,6 +84,32 @@ func (w *Web) NewRenderer(projectFS fs.FS, dir string, pages []string, funcMap t
 
 	// Store renderer reference so login/logout handlers can use it
 	w.renderer = r
+
+	// Build public renderer with public-layout + shared public pages
+	pubLayoutBytes, err := fs.ReadFile(templates, "templates/public-layout.html")
+	if err != nil {
+		log.Fatalf("hydrawebcomponents: reading public-layout.html: %v", err)
+	}
+
+	pr := &PublicRenderer{
+		templates: make(map[string]*template.Template),
+		web:       w,
+	}
+
+	for _, page := range []string{"landing.html", "public-docs.html"} {
+		pageBytes, err := fs.ReadFile(templates, "templates/"+page)
+		if err != nil {
+			log.Fatalf("hydrawebcomponents: reading %s: %v", page, err)
+		}
+		pageTmpl := template.New("public-layout.html")
+		if funcMap != nil {
+			pageTmpl = pageTmpl.Funcs(funcMap)
+		}
+		pr.templates[page] = template.Must(
+			pageTmpl.Parse(string(pubLayoutBytes) + "\n" + string(pageBytes)))
+	}
+
+	w.publicRenderer = pr
 
 	return r
 }

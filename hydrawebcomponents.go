@@ -40,10 +40,12 @@ type PageData struct {
 
 // Web holds shared web infrastructure state.
 type Web struct {
-	auth     *hydraauth.Auth
-	brand    Brand
-	navLinks []NavLink
-	renderer *Renderer
+	auth           *hydraauth.Auth
+	brand          Brand
+	navLinks       []NavLink
+	renderer       *Renderer
+	publicRenderer *PublicRenderer
+	docsConfig     *DocsConfig
 }
 
 // New creates a new Web instance with the given configuration.
