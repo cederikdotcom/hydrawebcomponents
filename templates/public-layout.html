@@ -57,5 +57,30 @@
     <div class="container">
         {{block "content" .}}{{end}}
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'dark',
+            themeVariables: {
+                darkMode: true,
+                background: '#0a0a0a',
+                primaryColor: '#1e1b4b',
+                primaryTextColor: '#e0e0e0',
+                primaryBorderColor: '#6366f1',
+                lineColor: '#6366f1',
+                secondaryColor: '#1a1a2e',
+                tertiaryColor: '#111'
+            }
+        });
+        document.querySelectorAll('code.language-mermaid').forEach(function(el) {
+            var pre = el.parentElement;
+            pre.classList.add('mermaid');
+            pre.textContent = el.textContent;
+            pre.style.background = 'transparent';
+            pre.style.border = 'none';
+        });
+        mermaid.run();
+    </script>
 </body>
 </html>
