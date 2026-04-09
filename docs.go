@@ -23,6 +23,7 @@ type DocsConfig struct {
 	Tagline        string                  // shown on the landing page below the brand
 	SectionGroups  []DocsSectionGroup       // tab groups for the docs viewer
 	Cache          map[string]template.HTML // pre-rendered HTML keyed by section key
+	EnableMermaid  bool                    // load Mermaid.js for diagram rendering
 }
 
 // docsPageData is the template data for the public docs viewer.

@@ -30,12 +30,13 @@ type Brand struct {
 
 // PageData is the base data wrapper that Render injects around project-specific data.
 type PageData struct {
-	Title    string
-	Error    string
-	LoggedIn bool
-	Brand    Brand
-	Nav      []NavLink
-	Data     any // project-specific page data
+	Title          string
+	Error          string
+	LoggedIn       bool
+	MermaidEnabled bool
+	Brand          Brand
+	Nav            []NavLink
+	Data           any // project-specific page data
 }
 
 // Web holds shared web infrastructure state.

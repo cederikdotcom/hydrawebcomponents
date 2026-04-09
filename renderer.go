@@ -28,10 +28,12 @@ func (r *PublicRenderer) Render(w http.ResponseWriter, name string, data any) {
 		return
 	}
 
+	mermaid := r.web.docsConfig != nil && r.web.docsConfig.EnableMermaid
 	pd := PageData{
-		Title: r.web.brand.Prefix + r.web.brand.Suffix,
-		Brand: r.web.brand,
-		Data:  data,
+		Title:          r.web.brand.Prefix + r.web.brand.Suffix,
+		Brand:          r.web.brand,
+		MermaidEnabled: mermaid,
+		Data:           data,
 	}
 
 	if err := t.ExecuteTemplate(w, "public-layout.html", pd); err != nil {
