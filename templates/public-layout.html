@@ -75,6 +75,16 @@
         });
         document.querySelectorAll('code.language-mermaid').forEach(function(el) {
             var pre = el.parentElement;
+            // Wrap in a scrollable container
+            var wrapper = document.createElement('div');
+            wrapper.style.overflowX = 'auto';
+            wrapper.style.margin = '16px 0';
+            wrapper.style.padding = '16px';
+            wrapper.style.background = '#0d0d14';
+            wrapper.style.borderRadius = '8px';
+            wrapper.style.border = '1px solid #222';
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
             pre.classList.add('mermaid');
             pre.textContent = el.textContent;
             pre.style.background = 'transparent';
