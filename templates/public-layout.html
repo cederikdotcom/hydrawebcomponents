@@ -77,7 +77,7 @@
             var pre = el.parentElement;
             var wrapper = document.createElement('div');
             wrapper.className = 'mermaid-wrapper';
-            wrapper.style.cssText = 'overflow:auto;margin:24px 0;padding:24px;background:#0d0d14;border-radius:8px;border:1px solid #222;cursor:grab;position:relative;max-height:80vh;';
+            wrapper.style.cssText = 'overflow:auto;margin:24px -24px;padding:24px;background:#0d0d14;border-radius:8px;border:1px solid #222;cursor:grab;position:relative;height:85vh;width:calc(100% + 48px);';
             pre.parentNode.insertBefore(wrapper, pre);
             wrapper.appendChild(pre);
             pre.classList.add('mermaid');
