@@ -76,51 +76,14 @@
         document.querySelectorAll('code.language-mermaid').forEach(function(el) {
             var pre = el.parentElement;
             var wrapper = document.createElement('div');
-            wrapper.className = 'mermaid-wrapper';
-            wrapper.style.cssText = 'overflow:auto;padding:24px;background:#0d0d14;border-radius:8px;border:1px solid #222;cursor:grab;position:relative;height:90vh;width:100vw;margin-left:calc(-50vw + 50%);margin-top:24px;margin-bottom:24px;';
+            wrapper.style.cssText = 'overflow-x:auto;margin:24px 0;padding:24px;background:#0d0d14;border-radius:8px;border:1px solid #222;';
             pre.parentNode.insertBefore(wrapper, pre);
             wrapper.appendChild(pre);
             pre.classList.add('mermaid');
             pre.textContent = el.textContent;
-            pre.style.cssText = 'background:transparent;border:none;min-width:max-content;';
+            pre.style.cssText = 'background:transparent;border:none;';
         });
-        mermaid.run().then(function() {
-            // After render: make SVGs large and add drag-to-pan
-            document.querySelectorAll('.mermaid-wrapper').forEach(function(wrapper) {
-                var svg = wrapper.querySelector('svg');
-                if (!svg) return;
-                svg.style.minWidth = '1200px';
-                svg.style.height = 'auto';
-                svg.removeAttribute('height');
-                // Drag to pan
-                var isDragging = false, startX, startY, scrollL, scrollT;
-                wrapper.addEventListener('mousedown', function(e) {
-                    isDragging = true;
-                    wrapper.style.cursor = 'grabbing';
-                    startX = e.pageX - wrapper.offsetLeft;
-                    startY = e.pageY - wrapper.offsetTop;
-                    scrollL = wrapper.scrollLeft;
-                    scrollT = wrapper.scrollTop;
-                });
-                wrapper.addEventListener('mouseleave', function() { isDragging = false; wrapper.style.cursor = 'grab'; });
-                wrapper.addEventListener('mouseup', function() { isDragging = false; wrapper.style.cursor = 'grab'; });
-                wrapper.addEventListener('mousemove', function(e) {
-                    if (!isDragging) return;
-                    e.preventDefault();
-                    wrapper.scrollLeft = scrollL - (e.pageX - wrapper.offsetLeft - startX);
-                    wrapper.scrollTop = scrollT - (e.pageY - wrapper.offsetTop - startY);
-                });
-                // Scroll to zoom
-                wrapper.addEventListener('wheel', function(e) {
-                    e.preventDefault();
-                    var scale = parseFloat(svg.style.transform ? svg.style.transform.replace(/[^0-9.]/g,'') : '1') || 1;
-                    scale += e.deltaY < 0 ? 0.1 : -0.1;
-                    scale = Math.max(0.5, Math.min(3, scale));
-                    svg.style.transform = 'scale(' + scale + ')';
-                    svg.style.transformOrigin = 'top left';
-                }, {passive: false});
-            });
-        });
+        mermaid.run();
     </script>
 </body>
 </html>
