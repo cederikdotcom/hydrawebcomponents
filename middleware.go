@@ -3,6 +3,7 @@ package hydrawebcomponents
 import (
 	"log"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/cederikdotcom/hydraapi"
@@ -15,9 +16,17 @@ func (w *Web) RequireAuth(next http.HandlerFunc) http.HandlerFunc {
 }
 
 // RequireWebAuth wraps an HTTP handler with cookie-based authentication.
-// Redirects to /login on failure (for web UI pages).
+// Redirects to /login?next=<url> on failure so the user lands at the
+// original destination after a successful login.
 func (w *Web) RequireWebAuth(next http.HandlerFunc) http.HandlerFunc {
-	return w.auth.RequireWebAuth("/login", next)
+	return func(wr http.ResponseWriter, r *http.Request) {
+		if w.auth.IsAuthenticated(r) {
+			next(wr, r)
+			return
+		}
+		dest := r.URL.RequestURI()
+		http.Redirect(wr, r, "/login?next="+url.QueryEscape(dest), http.StatusSeeOther)
+	}
 }
 
 // LogRequest is HTTP middleware that logs each request's method, path, and duration.

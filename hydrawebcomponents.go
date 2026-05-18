@@ -2,6 +2,7 @@ package hydrawebcomponents
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/cederikdotcom/hydraauth"
 )
@@ -80,22 +81,35 @@ func (w *Web) IsAuthenticated(r *http.Request) bool {
 // HandleLoginPage renders the shared login page.
 func (w *Web) HandleLoginPage(wr http.ResponseWriter, r *http.Request) {
 	if w.IsAuthenticated(r) {
-		http.Redirect(wr, r, "/admin", http.StatusSeeOther)
+		next := r.URL.Query().Get("next")
+		if next == "" {
+			next = "/admin"
+		}
+		http.Redirect(wr, r, next, http.StatusSeeOther)
 		return
 	}
-	w.renderer.Render(wr, "login.html", nil, false, "")
+	next := r.URL.Query().Get("next")
+	w.renderer.Render(wr, "login.html", map[string]string{"Next": next}, false, "")
 }
 
 // HandleLogin processes the login form submission.
 func (w *Web) HandleLogin(wr http.ResponseWriter, r *http.Request) {
 	token := r.FormValue("token")
+	next := r.FormValue("next")
+	if next == "" {
+		next = "/admin"
+	}
+	// Validate next is a relative path to prevent open redirect.
+	if parsed, err := url.Parse(next); err != nil || parsed.Host != "" {
+		next = "/admin"
+	}
 	if !w.auth.ValidateToken(token) {
 		wr.WriteHeader(http.StatusUnauthorized)
-		w.renderer.Render(wr, "login.html", nil, false, "Invalid token")
+		w.renderer.Render(wr, "login.html", map[string]string{"Next": next}, false, "Invalid token")
 		return
 	}
 	w.auth.SetLoginCookie(wr)
-	http.Redirect(wr, r, "/admin", http.StatusSeeOther)
+	http.Redirect(wr, r, next, http.StatusSeeOther)
 }
 
 // HandleLogout clears the session cookie and redirects to login.

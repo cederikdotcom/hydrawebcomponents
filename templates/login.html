@@ -69,6 +69,7 @@
     {{end}}
 
     <form method="POST" action="/login">
+        {{if .Data}}{{with index .Data "Next"}}<input type="hidden" name="next" value="{{.}}">{{end}}{{end}}
         <div class="form-group">
             <label for="token">Admin Token</label>
             <input type="password" id="token" name="token" placeholder="Enter admin token" required autofocus>
